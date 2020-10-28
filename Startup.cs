@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using ShopperApi.Data;
 using ShopperApi.Services;
 
@@ -37,9 +41,45 @@ namespace ShopperApi
             //services.AddApiVersioning(v=>v.ApiVersionReader=new MediaTypeApiVersionReader());
 
             // Repository
-            services.AddDbContext<ShopDbContext>(option => option.UseSqlServer(@"Data Source=ERICRANGEL6DE7\SQLEXPRESS;Initial Catalog=SHOP;Integrated Security=true;"));
+            services.AddDbContext<ShopDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("ShopTokenContext")));
             services.AddScoped<IAccount, AccountRepository>();
             services.AddScoped<ICustomer, CustomerRepository>();
+
+
+            //Identity
+            services.AddDefaultIdentity<IdentityUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ShopDbContext>()
+                .AddDefaultTokenProviders();
+
+            //JWT
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = true;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = appSettings.Validation,
+                    ValidIssuer = appSettings.Source
+                };
+
+
+            });
+
 
             //Documentation - Swagger
             services.AddSwaggerGen(s => s.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "Shopper Api", Version = "v1" }));
@@ -61,6 +101,8 @@ namespace ShopperApi
             }
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
             app.UseMvc();
 
             // Repository - Create Database
