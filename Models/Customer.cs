@@ -9,20 +9,20 @@ namespace ShopperApi.Models
     public class Customer
     {
         [Required]
-        public int id { get; set; }
+        public int Id { get; set; }
 
         [Required, StringLength(25)]
-        public string name { get; set; }
+        public string Name { get; set; }
 
         [Required, StringLength(25)]
-        public string lastName { get; set; }
+        public string LastName { get; set; }
         
         [Required, RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Email in not valid")]
-        public string email { get; set; }
+        public string Email { get; set; }
 
-        [Required, RegularExpression("^[0-9]*$", ErrorMessage = "Invalid Phone Number")]
-        public string phone { get; set; }
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Invalid Phone Number")]
+        public string Phone { get; set; }
 
-        public DateTime dateBirth { get; set; }
+        public DateTime DateBirth { get; set; }
     }
 }

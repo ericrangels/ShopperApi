@@ -16,7 +16,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using ShopperApi.Data;
+using ShopperApi.Security;
 using ShopperApi.Services;
 
 namespace ShopperApi
@@ -33,7 +36,14 @@ namespace ShopperApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver(); //CamelCase                   
+                    options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore; // Ignoring NULL values
+                });
+
 
             // Versioning
             services.AddApiVersioning();
@@ -54,9 +64,9 @@ namespace ShopperApi
 
             //JWT
             var appSettingsSection = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
+            services.Configure<JwtSettings>(appSettingsSection);
 
-            var appSettings = appSettingsSection.Get<AppSettings>();
+            var appSettings = appSettingsSection.Get<JwtSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
             services.AddAuthentication(x =>
@@ -83,7 +93,7 @@ namespace ShopperApi
 
             //Documentation - Swagger
             services.AddSwaggerGen(s => s.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo() { Title = "Shopper Api", Version = "v1" }));
-            
+
             // To return XML content - Header > [{"key":"Accept","value":"application/xml"}]
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddXmlDataContractSerializerFormatters();
         }
@@ -110,7 +120,7 @@ namespace ShopperApi
 
             //Documentation - Swagger
             app.UseSwagger();
-            app.UseSwaggerUI(s=>s.SwaggerEndpoint("/swagger/v1/swagger.json", "Shopper - Api operations"));
+            app.UseSwaggerUI(s => s.SwaggerEndpoint("/swagger/v1/swagger.json", "Shopper - Api operations"));
         }
     }
 }
