@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShopperApi.Models;
+using ShopperApi.Security;
 using ShopperApi.Services;
 
 namespace ShopperApi.Controllers
@@ -47,6 +48,7 @@ namespace ShopperApi.Controllers
         }
 
         // POST api/<CustomerController>
+        [ClaimsAuthorize("Customer", "INS")]
         [HttpPost]
         public IActionResult Post([FromBody] Customer customer)
         {
@@ -63,6 +65,7 @@ namespace ShopperApi.Controllers
         }
 
         // PUT api/<CustomerController>/5
+        [ClaimsAuthorize("Customer","UPD")]
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Customer customer)
         {
@@ -71,7 +74,7 @@ namespace ShopperApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != customer.id)
+            if (id != customer.Id)
             {
                 return BadRequest();
             }
@@ -91,6 +94,7 @@ namespace ShopperApi.Controllers
         }
 
         // DELETE api/<CustomerController>/5
+        [ClaimsAuthorize("Customer", "DEL")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

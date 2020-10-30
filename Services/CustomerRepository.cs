@@ -20,16 +20,16 @@ namespace ShopperApi.Services
         {
             IQueryable<Customer> customers;
 
-            int pageSize = 3;
+            int pageSize = 10;
 
             switch (sort)
             {
                 case "desc":
-                    customers = shopDbContext.Customers.OrderByDescending(c => c.name);
+                    customers = shopDbContext.Customers.OrderByDescending(c => c.Name);
                     break;
 
                 case "asc":
-                    customers = shopDbContext.Customers.OrderBy(c => c.name);
+                    customers = shopDbContext.Customers.OrderBy(c => c.Name);
                     break;
 
                 default:
@@ -41,14 +41,14 @@ namespace ShopperApi.Services
 
             if (filter != null)
             {
-                items = items.Where(c => c.name.StartsWith(filter)).ToList();
+                items = items.Where(c => c.Name.StartsWith(filter)).ToList();
             }
 
             return items;
         }
         public Customer GetCustomer(int id)
         {
-            var coustomer = shopDbContext.Customers.SingleOrDefault(c => c.id == id);
+            var coustomer = shopDbContext.Customers.SingleOrDefault(c => c.Id == id);
             return coustomer;
         }
 

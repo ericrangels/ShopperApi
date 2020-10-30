@@ -72,7 +72,7 @@ namespace ShopperApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != account.id)
+            if (id != account.Id)
             {
                 return BadRequest();
             }

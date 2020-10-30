@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20201027183759_Identity.Designer.cs" />
     <Compile Remove="Migrations\20201027184140_Identity.cs" />
     <Compile Remove="Migrations\20201027184140_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20201028234742_teste.cs" />
+    <Compile Remove="Migrations\20201028234742_teste.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

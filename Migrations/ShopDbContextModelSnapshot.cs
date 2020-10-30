@@ -136,9 +136,11 @@ namespace ShopperApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.Property<string>("LoginProvider");
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128);
 
-                    b.Property<string>("ProviderKey");
+                    b.Property<string>("ProviderKey")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ProviderDisplayName");
 
@@ -169,9 +171,11 @@ namespace ShopperApi.Migrations
                 {
                     b.Property<string>("UserId");
 
-                    b.Property<string>("LoginProvider");
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128);
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Value");
 
@@ -182,47 +186,46 @@ namespace ShopperApi.Migrations
 
             modelBuilder.Entity("ShopperApi.Models.Account", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("customerid");
+                    b.Property<int>("CustomerId");
 
-                    b.Property<string>("login")
+                    b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(15);
 
-                    b.Property<string>("pwd")
+                    b.Property<string>("Pwd")
                         .IsRequired();
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("ShopperApi.Models.Customer", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("dateBirth");
+                    b.Property<DateTime>("DateBirth");
 
-                    b.Property<string>("email")
+                    b.Property<string>("Email")
                         .IsRequired();
 
-                    b.Property<string>("lastName")
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(25);
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(25);
 
-                    b.Property<string>("phone")
-                        .IsRequired();
+                    b.Property<string>("Phone");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("Customers");
                 });

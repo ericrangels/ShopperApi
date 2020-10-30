@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ShopperApi.Models;
+using ShopperApi.Security;
 
 namespace ShopperApi.Controllers
 {
@@ -20,15 +22,15 @@ namespace ShopperApi.Controllers
     {
         private readonly SignInManager<IdentityUser> _signManager;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly AppSettings _appSettings;
+        private readonly JwtSettings _jwtSettings;
 
         public AuthController(SignInManager<IdentityUser> signManager, 
                               UserManager<IdentityUser> userManager,
-                              IOptions<AppSettings> appSettings)
+                              IOptions<JwtSettings> jwtSettings)
         {
             _signManager = signManager;
             _userManager = userManager;
-            _appSettings = appSettings.Value;
+            _jwtSettings = jwtSettings.Value;
         }
 
         [HttpPost("register")]
@@ -71,14 +73,18 @@ namespace ShopperApi.Controllers
         {
             var user = await _userManager.FindByEmailAsync(email);
 
+            var identityClaims = new ClaimsIdentity();
+            identityClaims.AddClaims(await _userManager.GetClaimsAsync(user));
+
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = _appSettings.Source,
-                Audience = _appSettings.Validation,
-                Expires = DateTime.UtcNow.AddHours(_appSettings.ExpirationHours),
+                Subject = identityClaims,
+                Issuer = _jwtSettings.Source,
+                Audience = _jwtSettings.Validation,
+                Expires = DateTime.UtcNow.AddHours(_jwtSettings.ExpirationHours),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

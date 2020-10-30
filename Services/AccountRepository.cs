@@ -27,11 +27,11 @@ namespace ShopperApi.Services
             switch (sort)
             {
                 case "desc":
-                    accounts = shopDbContext.Accounts.OrderByDescending(a => a.login);
+                    accounts = shopDbContext.Accounts.OrderByDescending(a => a.Login);
                     break;
 
                 case "asc":
-                    accounts = shopDbContext.Accounts.OrderBy(a => a.login);
+                    accounts = shopDbContext.Accounts.OrderBy(a => a.Login);
                     break;
 
                 default:
@@ -43,7 +43,7 @@ namespace ShopperApi.Services
 
             if (filter != null)
             {
-                items = items.Where(a => a.login.StartsWith(filter)).ToList();
+                items = items.Where(a => a.Login.StartsWith(filter)).ToList();
             }
 
             return items;
@@ -51,14 +51,14 @@ namespace ShopperApi.Services
 
         public Account GetAccount(int id)
         {
-            var account = shopDbContext.Accounts.SingleOrDefault(a => a.id == id);
+            var account = shopDbContext.Accounts.SingleOrDefault(a => a.Id == id);
             return account;
         }
 
         public void AddAccount(Account account)
         {
 
-            account.pwd = ToHashMd5Hexadecimal(account.pwd);
+            account.Pwd = ToHashMd5Hexadecimal(account.Pwd);
 
             shopDbContext.Accounts.Add(account);
             shopDbContext.SaveChanges(true);
@@ -66,7 +66,7 @@ namespace ShopperApi.Services
 
         public void UpdAccount(Account account)
         {
-            account.pwd = ToHashMd5Hexadecimal(account.pwd);
+            account.Pwd = ToHashMd5Hexadecimal(account.Pwd);
 
             shopDbContext.Accounts.Update(account);
             shopDbContext.SaveChanges(true);

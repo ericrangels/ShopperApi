@@ -9,14 +9,14 @@ namespace ShopperApi.Models
     public class Account
     {
         [Required]
-        public int id { get; set; }
+        public int Id { get; set; }
         
         [Required, StringLength(15)]
-        public string login { get; set; }
+        public string Login { get; set; }
         
         [Required]
-        public string pwd { get; set; }
+        public string Pwd { get; set; }
 
-        public int customerid { get; set; }
+        public int CustomerId { get; set; }
     }
 }
